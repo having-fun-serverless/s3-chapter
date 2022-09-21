@@ -1,2 +1,5 @@
 # s3-chapter
-Access S3 in our AWS project
+Learn about S3
+
+Make sure to run first sam build && sam deploy --guided
+
