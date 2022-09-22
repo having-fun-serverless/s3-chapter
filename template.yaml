@@ -65,6 +65,28 @@ Resources:
             Path: /groups
             Method: get
 
+  SendPostFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: send_post/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Environment:
+        Variables:
+          MESSAGES_BUCKET: !Ref Messages
+          GROUPS_SUBSCRIBERS_TABLE_NAME: !Ref GroupsSubscribersTable
+      Policies:
+        - S3WritePolicy:
+            BucketName: !Ref Messages
+        - DynamoDBReadPolicy:
+            TableName: !Ref GroupsSubscribersTable
+      Events:
+        MailingList:
+          Type: Api
+          Properties:
+            Path: /groups/{group-id}/post
+            Method: post
+            
   GroupsSubscribersTable:
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -82,7 +104,10 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-      
+  
+  Messages:
+    Type: AWS::S3::Bucket
+    
 Outputs:
   ViewGroupsApi:
     Description: "API Gateway endpoint URL for Prod stage for ViewGroupsFunction function"
